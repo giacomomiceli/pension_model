@@ -222,7 +222,7 @@ class TimeSeriesPredictor:
         print(f"Samples after cleaning: {len(X)}")
         
         # Feature selection using statistical tests
-        selector = SelectKBest(score_func=f_regression, k=min(15, X.shape[1]))
+        selector = SelectKBest(score_func=f_regression, k=min(15, X.shape[1])) # 15 is currently a magic number, Harrell's rule of thumb maybe better (to be improved)
         X_selected = selector.fit_transform(X, y)
         selected_features = X.columns[selector.get_support()]
         

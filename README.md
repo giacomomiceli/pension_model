@@ -69,3 +69,42 @@ predictions = predictor.predict_new_data(df_scenario)
 - Best model selection based on cross-validation performance
 - Feature importance ranking
 - Prediction capabilities for new data
+
+# Improvements
+
+## Dummy variables
+As Economic relationships often change during crises or policy shifts, for economic data, one shoould consider dummy variables:
+
+- Economic crisis periods: 
+    - 2007-2009 (Financial Crisis), 
+    - 2010-2012 (European Debt Crisis), 
+    - 2020-2022 (COVID-19)
+- Policy regime changes: Different economic policy periods
+- Structural breaks: High/low volatility periods in economic indicators
+- (Seasonal effects: If you have quarterly/monthly data)
+
+## Feature significance analysis
+Check/develop comprehensive_feature_analysis() (check in sandbox) that provides:
+
+- Correlation analysis: Linear relationships
+- Mutual information: Non-linear relationships
+- F-statistics: Statistical significance testing
+- Univariate R-squared: Individual predictive power
+- Composite ranking: Combined score across all metrics
+- Visual comparisons: Charts showing feature importance
+
+This would give a better data-driven ranking of which features are most important for predicting `D_PIB`.
+
+```python
+# Run the enhanced pipeline
+predictor, results, evaluation, comparison, feature_analysis, feature_summary, dummy_recommendations = run_full_pipeline(df)
+
+# Get the most important features
+print("Top 5 most predictive features:")
+print(feature_summary.head(5))
+
+# Review dummy variable suggestions
+print("Dummy variable recommendations:")
+for rec in dummy_recommendations:
+    print(f"- {rec['variable']}: {rec['recommendation']}")
+```
