@@ -6,7 +6,7 @@
 3. Run: predictor, results, evaluation, comparison
 
 ```python
-run_full_pipeline(your_dataframe)
+predictor, results, evaluation, comparison = run_full_pipeline(your_dataframe)
 ```
 
 4. Stress tests using given scenario
@@ -69,6 +69,8 @@ predictions = predictor.predict_new_data(df_scenario)
 - Best model selection based on cross-validation performance
 - Feature importance ranking
 - Prediction capabilities for new data
+
+---
 
 # Improvements
 
