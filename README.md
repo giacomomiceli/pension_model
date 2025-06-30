@@ -10,9 +10,9 @@ run_full_pipeline(your_dataframe)
 ```
 
 ## The pipeline will:
-✓ Perform comprehensive data analysis
-✓ Test multiple advanced ML models
-✓ Apply proper time series validation
-✓ Prevent overfitting through cross-validation
-✓ Provide detailed model diagnostics
-✓ Select the best performing model
+- [x] Perform comprehensive data analysis
+- [x] Test multiple advanced ML models
+- [x] Apply proper time series validation
+- [x] Prevent overfitting through cross-validation
+- [x] Provide detailed model diagnostics
+- [x] Select the best performing model
