@@ -29,38 +29,38 @@ predictions = predictor.predict_new_data(df_scenario)
 
 ---
 
-## Appendix
+## Model training and presitions
 
-### Advanced Model Selection
+### Advanced model selection
 - Linear models (Ridge, Lasso, Elastic Net)
 - Tree-based models (Random Forest, Gradient Boosting)
 - Advanced gradient boosting (XGBoost, LightGBM)
 - Support Vector Regression
 - Neural Networks
 
-### Proper Time Series Handling
+### Proper time series handling
 - TimeSeriesSplit for cross-validation (maintains temporal order)
 - Lag feature creation (dummy variables????) [to be improved]
 - Rolling statistics
 - Stationarity testing
 
-### Overfitting Prevention
+### Overfitting prevention
 - Cross-validation with proper time series splits
 - Hyperparameter tuning with `GridSearchCV`
 - Feature selection using statistical tests
 - Robust scaling for outlier handling
 
-### Comprehensive Analysis
+### Comprehensive analysis
 - Statistical tests (normality, stationarity)
 - Correlation analysis
 - Residual diagnostics
 - Feature importance analysis
 
-### Modern Libraries Used
-- XGBoost & LightGBM: State-of-the-art gradient boosting
-- Scikit-learn: Comprehensive ML toolkit
-- Statsmodels: Advanced statistical analysis
-- Seaborn/Matplotlib: Professional visualizations
+### Modern libraries used
+- `XGBoost` and `LightGBM`: State-of-the-art gradient boosting
+- `Scikit-learn`: Comprehensive ML toolkit
+- `Statsmodels`: Advanced statistical analysis
+- `Seaborn/Matplotlib` and `Plotly`: Professional visualizations
 
 ### What You'll Get:
 - Comprehensive data analysis with statistical tests
