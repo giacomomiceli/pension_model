@@ -2,7 +2,7 @@
 name = "pension-model"
 version = "0.1.0"
 description = ""
-authors = ["drjekyll27 <gia.miceli@gmail.com>"]
+authors = ["giacomomiceli <giacomomiceli@users.noreply.github.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
