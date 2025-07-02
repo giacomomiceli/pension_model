@@ -277,7 +277,11 @@ class TimeSeriesPredictor:
         logger.info(f" Samples after cleaning: {len(X)}")
         
         # Feature selection using statistical tests
-        selector = SelectKBest(score_func=f_regression, k=min(15, X.shape[1])) # 15 is currently a magic number, Harrell's rule of thumb maybe better (to be improved)
+        # Rule: Select features based on sample size ratio (Harrell's rule of thumb)
+        # For regression: max features ~ n_samples / 15, but ensure at least 5 and max 20
+        max_features = max(5, min(20, len(X) // 15))
+        k_features = min(max_features, X.shape[1])
+        selector = SelectKBest(score_func=f_regression, k=k_features) # Harrell's rule of thumb
         X_selected = selector.fit_transform(X, y)
         selected_features = X.columns[selector.get_support()]
         self.feature_engineering_params['selected_features'] = selected_features

@@ -1,8 +1,8 @@
 {
   "model_name": "production_model_v2",
-  "best_model_name": "Random Forest",
+  "best_model_name": "Ridge",
   "target_column": "D_PIB",
-  "feature_names": "Index(['PROD', 'PIB_VAL', 'PRELEV_REF', 'PIB_VOL', 'PROD_lag_1', 'PROD_lag_2',\n       'PIB_VAL_lag_1', 'PIB_VOL_lag_1', 'PIB_VOL_lag_2', 'PROD_roll_mean_3',\n       'PROD_roll_mean_6', 'PIB_VAL_roll_mean_3', 'PRELEV_REF_roll_mean_3',\n       'PIB_VOL_roll_mean_3', 'PIB_VOL_roll_mean_6'],\n      dtype='object')",
+  "feature_names": "Index(['PROD', 'PIB_VAL', 'PRELEV_REF', 'CONTRIB_REF', 'PIB_VOL', 'PROD_lag_1',\n       'PROD_lag_2', 'PIB_VAL_lag_1', 'PIB_VAL_lag_2', 'PRELEV_REF_lag_1',\n       'PIB_VOL_lag_1', 'PIB_VOL_lag_2', 'PROD_roll_mean_3',\n       'PROD_roll_mean_6', 'MI_roll_mean_6', 'PIB_VAL_roll_mean_3',\n       'PIB_VAL_roll_mean_6', 'PRELEV_REF_roll_mean_3', 'PIB_VOL_roll_mean_3',\n       'PIB_VOL_roll_mean_6'],\n      dtype='object')",
   "data_schema": {
     "columns": [
       "Annee",
@@ -92,47 +92,47 @@
       "PIB_VOL_roll_mean_3",
       "PIB_VOL_roll_mean_6"
     ],
-    "selected_features": "Index(['PROD', 'PIB_VAL', 'PRELEV_REF', 'PIB_VOL', 'PROD_lag_1', 'PROD_lag_2',\n       'PIB_VAL_lag_1', 'PIB_VOL_lag_1', 'PIB_VOL_lag_2', 'PROD_roll_mean_3',\n       'PROD_roll_mean_6', 'PIB_VAL_roll_mean_3', 'PRELEV_REF_roll_mean_3',\n       'PIB_VOL_roll_mean_3', 'PIB_VOL_roll_mean_6'],\n      dtype='object')"
+    "selected_features": "Index(['PROD', 'PIB_VAL', 'PRELEV_REF', 'CONTRIB_REF', 'PIB_VOL', 'PROD_lag_1',\n       'PROD_lag_2', 'PIB_VAL_lag_1', 'PIB_VAL_lag_2', 'PRELEV_REF_lag_1',\n       'PIB_VOL_lag_1', 'PIB_VOL_lag_2', 'PROD_roll_mean_3',\n       'PROD_roll_mean_6', 'MI_roll_mean_6', 'PIB_VAL_roll_mean_3',\n       'PIB_VAL_roll_mean_6', 'PRELEV_REF_roll_mean_3', 'PIB_VOL_roll_mean_3',\n       'PIB_VOL_roll_mean_6'],\n      dtype='object')"
   },
   "model_results": {
     "Linear Regression": {
       "model": "LinearRegression()",
-      "cv_rmse_mean": 0.004105240814287271,
-      "cv_rmse_std": 0.0016778997026272362,
-      "cv_scores": "[-1.76789717e-05 -4.20738957e-05 -1.95326626e-05 -1.75534758e-05\n -1.50274188e-06]"
+      "cv_rmse_mean": 0.002543730537840649,
+      "cv_rmse_std": 0.0010517890343538759,
+      "cv_scores": "[-1.28167633e-05 -9.60337574e-06 -1.20495275e-05 -2.32592063e-06\n -1.08853897e-06]"
     },
     "Ridge": {
-      "model": "Ridge(alpha=100.0)",
-      "cv_rmse_mean": 0.004057342647449278,
-      "cv_rmse_std": 0.0017358789914710794,
-      "cv_scores": "[-1.53091250e-05 -4.28816962e-05 -2.36195003e-05 -1.41008647e-05\n -1.46533991e-06]"
+      "model": "Ridge(alpha=0.1)",
+      "cv_rmse_mean": 0.002527663212826576,
+      "cv_rmse_std": 0.0010265610832392226,
+      "cv_scores": "[-1.06265584e-05 -1.13927269e-05 -1.17996768e-05 -2.26631478e-06\n -1.12926807e-06]"
     },
     "Lasso": {
       "model": "Lasso(alpha=0.001)",
-      "cv_rmse_mean": 0.0042706674946458,
-      "cv_rmse_std": 0.001397910443281498,
-      "cv_scores": "[-1.84228541e-05 -3.81736693e-05 -2.82714118e-05 -1.11165447e-05\n -4.97929233e-06]"
+      "cv_rmse_mean": 0.0032816764898306442,
+      "cv_rmse_std": 0.0015660646219428879,
+      "cv_scores": "[-1.82051113e-05 -2.78795070e-05 -1.45122950e-05 -7.60412464e-07\n -4.75246918e-06]"
     },
     "Elastic Net": {
       "model": "ElasticNet()",
-      "cv_rmse_mean": 0.00479154338282357,
-      "cv_rmse_std": 0.0019187172245742029,
-      "cv_scores": "[-2.89271255e-05 -4.48251907e-05 -4.60215745e-05 -4.37201141e-06\n -9.05591672e-06]"
+      "cv_rmse_mean": 0.004707364684406667,
+      "cv_rmse_std": 0.002205219645654148,
+      "cv_scores": "[-2.79944381e-05 -4.69190546e-05 -4.89498042e-05 -1.72656641e-06\n -9.52151650e-06]"
     },
     "Random Forest": {
-      "model": "RandomForestRegressor(min_samples_split=5, n_estimators=50, random_state=42)",
-      "cv_rmse_mean": 0.0036364064156946354,
-      "cv_rmse_std": 0.0019666033268132196,
-      "cv_scores": "[-1.09324962e-05 -3.36528009e-05 -1.26372888e-05 -2.81880656e-05\n -4.42497443e-08]"
+      "model": "RandomForestRegressor(max_depth=10, n_estimators=200, random_state=42)",
+      "cv_rmse_mean": 0.003315799280104518,
+      "cv_rmse_std": 0.0017982468334902715,
+      "cv_scores": "[-1.19820748e-05 -3.42441923e-05 -1.20539389e-05 -1.28151101e-05\n -4.57665313e-08]"
     },
     "Gradient Boosting": {
       "model": "GradientBoostingRegressor(random_state=42)",
-      "cv_rmse_mean": 0.003777316647625694,
-      "cv_rmse_std": 0.0020395425724102365,
-      "cv_scores": "[-1.43568764e-05 -3.67328420e-05 -1.31533953e-05 -2.78792794e-05\n -1.68816951e-08]"
+      "cv_rmse_mean": 0.0033637576851999807,
+      "cv_rmse_std": 0.001856930175817855,
+      "cv_scores": "[-1.40659025e-05 -3.66754163e-05 -1.24884780e-05 -1.05310770e-05\n -5.44034554e-08]"
     }
   },
   "max_lag": 2,
-  "created_at": "2025-07-02T15:51:57.711929",
+  "created_at": "2025-07-02T16:30:43.377375",
   "python_version": "2.3.0|2.3.1"
 }
