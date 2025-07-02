@@ -256,7 +256,6 @@ class TimeSeriesPredictor:
         
         return self.X_scaled, self.y
 
-
     def train_models(self):
         """
         Model training and comparison
@@ -427,7 +426,6 @@ class TimeSeriesPredictor:
             'predictions': y_pred
         }
     
-
     def model_comparison_summary(self):
         """
         Model comparison summary
