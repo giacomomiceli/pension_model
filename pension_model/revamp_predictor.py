@@ -29,7 +29,12 @@ from sklearn.preprocessing import RobustScaler
 from sklearn.model_selection import TimeSeriesSplit, GridSearchCV, cross_val_score
 from sklearn.linear_model import LinearRegression, Ridge, Lasso, ElasticNet
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+from sklearn.svm import SVR
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+# Advanced models
+#import xgboost as xgb
+#import lightgbm as lgb
+from sklearn.neural_network import MLPRegressor
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -343,7 +348,7 @@ class TimeSeriesPredictor:
             'Lasso': Lasso(),
             'Elastic Net': ElasticNet(),
             'Random Forest': RandomForestRegressor(random_state=42),
-            'Gradient Boosting': GradientBoostingRegressor(random_state=42),
+            #'Gradient Boosting': GradientBoostingRegressor(random_state=42),
             #'XGBoost': xgb.XGBRegressor(random_state=42, eval_metric='rmse'),
             #'LightGBM': lgb.LGBMRegressor(random_state=42, verbose=-1),
             #'SVR': SVR(),
