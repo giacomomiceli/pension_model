@@ -1,7 +1,18 @@
+# Project information
 site_name: Pension model
+site_url: https://kogitai.ch/
+site_author: Giacomo Miceli
+site_description: >-
+  Modeling pension state expenses
+repo_url: https://github.com/giacomomiceli/pension_model
+repo_name: GitHub
+
+site_name: Pension model
+
 nav:
-  - Index: 'index.md'
+  - Home: 'index.md'
   - Introduction: 'intro.md'
+  - Variables: 'variables.md'
 
 theme:
   name: material
