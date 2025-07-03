@@ -1,17 +1,13 @@
-# Welcome to MkDocs
+# Welcome to the Pension State Model System
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+**Concept overview** The Pension State Model System is an idea developed by Nicolas Houlie, aiming to transform the regulatory compliance process for asset management firms, as well as private and institutional banks.
 
-## Commands
+**Objective and use case** The model attempts to identify the relationship between state pension expenditures, as a percentage of GDP, and key macroeconomic indicators. This serves as a foundation for detecting long-term trends and enables stress testing of the pension system under various macroeconomic scenarios.
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+**Techincal implementation** The implementation is production-ready. Using historical time series data, the system applies advanced data science techniques and a range of diverse models. It evaluates performance based on specific metrics, selecting the most accurate model. Once the training process is complete, the best-performing model is saved and ready to be reloaded for forecasting or simulating pension expenditures under different macroeconomic conditions.
 
-## Project layout
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+For full documentation visit [PensionModelDocs](https://giacomomiceli.github.io/pension_model/).
+
+
+
