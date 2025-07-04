@@ -31,7 +31,7 @@ from sklearn.model_selection import TimeSeriesSplit, GridSearchCV, cross_val_sco
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
 # Import ML models and parameters for GridSearch
-from regression_models import create_enhanced_models_with_glm, create_enhanced_param_grids
+from pension_model.regression_models import create_enhanced_models_with_glm, create_enhanced_param_grids
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)

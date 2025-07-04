@@ -95,6 +95,12 @@
     "selected_features": "Index(['PROD', 'PIB_VAL', 'PRELEV_REF', 'CONTRIB_REF', 'PIB_VOL', 'PROD_lag_1',\n       'PROD_lag_2', 'PIB_VAL_lag_1', 'PIB_VAL_lag_2', 'PRELEV_REF_lag_1',\n       'PIB_VOL_lag_1', 'PIB_VOL_lag_2', 'PROD_roll_mean_3',\n       'PROD_roll_mean_6', 'MI_roll_mean_6', 'PIB_VAL_roll_mean_3',\n       'PIB_VAL_roll_mean_6', 'PRELEV_REF_roll_mean_3', 'PIB_VOL_roll_mean_3',\n       'PIB_VOL_roll_mean_6'],\n      dtype='object')"
   },
   "model_results": {
+    "Random Forest": {
+      "model": "RandomForestRegressor(max_depth=10, n_estimators=200, random_state=42)",
+      "cv_rmse_mean": 0.003315799280104518,
+      "cv_rmse_std": 0.0017982468334902715,
+      "cv_scores": "[-1.19820748e-05 -3.42441923e-05 -1.20539389e-05 -1.28151101e-05\n -4.57665313e-08]"
+    },
     "GLM_Gamma_Log": {
       "model": "GLMWrapper(alpha=0.0, fit_intercept=False)",
       "cv_rmse_mean": 0.0025512662569430614,
@@ -121,6 +127,6 @@
     }
   },
   "max_lag": 2,
-  "created_at": "2025-07-04T09:47:27.480098",
+  "created_at": "2025-07-04T11:00:19.826948",
   "python_version": "2.3.0|2.2.6"
 }

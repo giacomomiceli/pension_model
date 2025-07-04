@@ -8,7 +8,7 @@ from sklearn.svm import SVR
 # from sklearn.neural_network import MLPRegressor
 
 # LGM Wrapper
-from glm_wrapper import GLMWrapper
+from pension_model.glm_wrapper import GLMWrapper
 
 def create_enhanced_models_with_glm():
     """
@@ -20,7 +20,7 @@ def create_enhanced_models_with_glm():
         # 'Ridge': Ridge(),
         # 'Lasso': Lasso(),
         # 'Elastic Net': ElasticNet(),
-        # 'Random Forest': RandomForestRegressor(random_state=42),
+        'Random Forest': RandomForestRegressor(random_state=42),
         # 'SVR': SVR(),
         # 'Gradient Boosting': GradientBoostingRegressor(random_state=42),
         # 'XGBoost': xgb.XGBRegressor(random_state=42, eval_metric='rmse'),
@@ -49,11 +49,11 @@ def create_enhanced_param_grids():
         #     'alpha': [0.001, 0.01, 0.1, 1.0],
         #     'l1_ratio': [0.1, 0.5, 0.7, 0.9]
         # },
-        # 'Random Forest': {
-        #     'n_estimators': [50, 100, 200],
-        #     'max_depth': [None, 10, 20],
-        #     'min_samples_split': [2, 5]
-        # },
+        'Random Forest': {
+            'n_estimators': [50, 100, 200],
+            'max_depth': [None, 10, 20],
+            'min_samples_split': [2, 5]
+        },
         # 'SVR': {
         #     'C': [0.1, 1, 10, 100],
         #     'gamma': ['scale', 'auto', 0.001, 0.01],
