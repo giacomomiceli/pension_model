@@ -4,7 +4,6 @@
 
 import numpy as np
 import pandas as pd
-import pickle
 import joblib
 import json
 import warnings
@@ -13,7 +12,6 @@ warnings.filterwarnings('ignore')
 # Plot
 import matplotlib.pyplot as plt
 import seaborn as sns
-import plotly
 
 # General use tools
 import logging
@@ -30,14 +28,10 @@ from statsmodels.tsa.stattools import adfuller
 from sklearn.feature_selection import SelectKBest, f_regression
 from sklearn.preprocessing import RobustScaler
 from sklearn.model_selection import TimeSeriesSplit, GridSearchCV, cross_val_score
-from sklearn.linear_model import LinearRegression, Ridge, Lasso, ElasticNet
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
-from sklearn.svm import SVR
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-# Advanced models
-#import xgboost as xgb
-#import lightgbm as lgb
-from sklearn.neural_network import MLPRegressor
+
+# Import ML models and parameters for GridSearch
+from regression_models import create_enhanced_models_with_glm, create_enhanced_param_grids
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -345,53 +339,10 @@ class TimeSeriesPredictor:
         logger.info("="*60)
         
         # Define models with hyperparameter tuning
-        models = {
-            'Linear Regression': LinearRegression(),
-            'Ridge': Ridge(),
-            'Lasso': Lasso(),
-            'Elastic Net': ElasticNet(),
-            'Random Forest': RandomForestRegressor(random_state=42),
-            #'Gradient Boosting': GradientBoostingRegressor(random_state=42),
-            #'XGBoost': xgb.XGBRegressor(random_state=42, eval_metric='rmse'),
-            #'LightGBM': lgb.LGBMRegressor(random_state=42, verbose=-1),
-            #'SVR': SVR(),
-            #'Neural Network': MLPRegressor(random_state=42, max_iter=1000)
-        }
+        models = create_enhanced_models_with_glm()
         
         # Hyperparameter grids for key models
-        param_grids = {
-            'Ridge': {'alpha': [0.1, 1.0, 10.0, 100.0]},
-            'Lasso': {'alpha': [0.001, 0.01, 0.1, 1.0]},
-            'Elastic Net': {
-                'alpha': [0.001, 0.01, 0.1, 1.0],
-                'l1_ratio': [0.1, 0.5, 0.7, 0.9]
-            },
-            'Random Forest': {
-                'n_estimators': [50, 100, 200],
-                'max_depth': [None, 10, 20],
-                'min_samples_split': [2, 5]
-            },
-            # 'XGBoost': {
-            #     'n_estimators': [50, 100, 200],
-            #     'max_depth': [3, 6, 9],
-            #     'learning_rate': [0.01, 0.1, 0.2]
-            # },
-            # 'LightGBM': {
-            #     'n_estimators': [50, 100, 200],
-            #     'max_depth': [3, 6, 9],
-            #     'learning_rate': [0.01, 0.1, 0.2]
-            # },
-            # 'SVR': {
-            #     'C': [0.1, 1, 10, 100],
-            #     'gamma': ['scale', 'auto', 0.001, 0.01],
-            #     'kernel': ['rbf', 'linear']
-            # },
-            # 'Neural Network': {
-            #     'hidden_layer_sizes': [(50,), (100,), (50, 50), (100, 50)],
-            #     'alpha': [0.0001, 0.001, 0.01],
-            #     'learning_rate_init': [0.001, 0.01]
-            # },
-        }
+        param_grids = create_enhanced_param_grids()
         
         results = {}
         

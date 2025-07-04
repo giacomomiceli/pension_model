@@ -16,7 +16,7 @@ plotly = "^6.2.0"
 notebook = "^7.4.3"
 missingno = "^0.5.2"
 ipykernel = "^6.29.5"
-scipy = "^1.16.0"
+scipy = ">=1.10,<1.14"
 statsmodels = "^0.14.4"
 mkdocs-material = "^9.6.15"
 
