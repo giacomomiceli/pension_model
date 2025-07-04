@@ -1,7 +1,7 @@
 import pandas as pd
 import logging
 
-from revamp_predictor import TimeSeriesPredictor
+from predictor import TimeSeriesPredictor
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
