@@ -4,7 +4,7 @@
 import pandas as pd
 import logging
 
-from predictor import TimeSeriesPredictor
+from pension_model.predictor import TimeSeriesPredictor
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
