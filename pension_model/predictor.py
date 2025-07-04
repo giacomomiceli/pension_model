@@ -362,6 +362,10 @@ class TimeSeriesPredictor:
         param_grids = {
             'Ridge': {'alpha': [0.1, 1.0, 10.0, 100.0]},
             'Lasso': {'alpha': [0.001, 0.01, 0.1, 1.0]},
+            'Elastic Net': {
+                'alpha': [0.001, 0.01, 0.1, 1.0],
+                'l1_ratio': [0.1, 0.5, 0.7, 0.9]
+            },
             'Random Forest': {
                 'n_estimators': [50, 100, 200],
                 'max_depth': [None, 10, 20],
@@ -371,7 +375,22 @@ class TimeSeriesPredictor:
             #     'n_estimators': [50, 100, 200],
             #     'max_depth': [3, 6, 9],
             #     'learning_rate': [0.01, 0.1, 0.2]
-            # }
+            # },
+            # 'LightGBM': {
+            #     'n_estimators': [50, 100, 200],
+            #     'max_depth': [3, 6, 9],
+            #     'learning_rate': [0.01, 0.1, 0.2]
+            # },
+            # 'SVR': {
+            #     'C': [0.1, 1, 10, 100],
+            #     'gamma': ['scale', 'auto', 0.001, 0.01],
+            #     'kernel': ['rbf', 'linear']
+            # },
+            # 'Neural Network': {
+            #     'hidden_layer_sizes': [(50,), (100,), (50, 50), (100, 50)],
+            #     'alpha': [0.0001, 0.001, 0.01],
+            #     'learning_rate_init': [0.001, 0.01]
+            # },
         }
         
         results = {}
