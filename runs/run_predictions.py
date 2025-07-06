@@ -34,11 +34,11 @@ if success:
     
     # Make predictions
     predictions_multi = new_predictor.predict_new_data(new_data_multi)
-    print(f"Predictions for multiple rows: {predictions_multi}")
+    print(f"Predictions for multiple rows:\n{predictions_multi}")
     
     # Get predictions with confidence (if supported)
     pred_with_conf = new_predictor.predict_new_data(new_data_multi, return_confidence=True)
     if isinstance(pred_with_conf, tuple):
         predictions, confidence = pred_with_conf
-        print(f"Predictions: {predictions}")
-        print(f"Confidence: {confidence}")
+        print(f"Predictions:\n{predictions}")
+        print(f"Confidence:\n{confidence}")

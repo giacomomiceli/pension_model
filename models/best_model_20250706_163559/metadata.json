@@ -1,6 +1,6 @@
 {
-  "model_name": "production_model_v1",
-  "best_model_name": "GLM_Gamma_Log",
+  "model_name": "best_model_20250706_163559",
+  "best_model_name": "GLM_Gaussian_Log",
   "target_column": "D_PIB",
   "feature_names": "Index(['PROD', 'CHO', 'MI', 'FEC', 'ESP_F', 'ESP_H', 'PIB_VAL', 'PRELEV_REF',\n       'CONTRIB_REF', 'PIB_VOL'],\n      dtype='object')",
   "data_schema": {
@@ -33,7 +33,7 @@
       "PIB_VOL": "float64"
     },
     "shape": [
-      398,
+      552,
       12
     ],
     "date_range": [
@@ -49,37 +49,37 @@
   },
   "model_results": {
     "Random Forest": {
-      "model": "RandomForestRegressor(max_depth=10, n_estimators=200, random_state=42)",
-      "cv_rmse_mean": 0.003367864425846251,
-      "cv_rmse_std": 0.001808363975195301,
-      "cv_scores": "[-1.21664221e-05 -3.65454261e-05 -1.12065343e-05 -1.30228017e-05\n -1.22271087e-07]"
+      "model": "RandomForestRegressor(min_samples_split=5, n_estimators=50, random_state=42)",
+      "cv_rmse_mean": 0.003212516328035764,
+      "cv_rmse_std": 0.0019880758780969963,
+      "cv_scores": "[-9.53000674e-06 -4.38070721e-05 -8.40431195e-06 -9.47843085e-06\n -1.43712602e-07]"
     },
     "GLM_Gamma_Log": {
       "model": "GLMWrapper(alpha=0.0)",
-      "cv_rmse_mean": 0.002507219022564397,
-      "cv_rmse_std": 0.0007357933003332379,
-      "cv_scores": "[-6.65342682e-06 -2.23964396e-06 -1.40307309e-05 -6.66779239e-06\n -4.54610099e-06]"
+      "cv_rmse_mean": 0.0029237020223097368,
+      "cv_rmse_std": 0.0007472372751274572,
+      "cv_scores": "[-1.07746663e-05 -2.52243737e-06 -1.34918679e-05 -1.16930895e-05\n -7.04992433e-06]"
     },
     "GLM_Gaussian_Log": {
       "model": "GLMWrapper(alpha=0.0, family='gaussian')",
-      "cv_rmse_mean": 0.0025222594213301142,
-      "cv_rmse_std": 0.0007527828566262095,
-      "cv_scores": "[-6.57672274e-06 -2.12174713e-06 -1.40369413e-05 -7.39384221e-06\n -4.51311970e-06]"
+      "cv_rmse_mean": 0.0029074982121506535,
+      "cv_rmse_std": 0.0007604921432702217,
+      "cv_scores": "[-1.07242459e-05 -2.55244247e-06 -1.36018823e-05 -1.18751533e-05\n -6.40574672e-06]"
     },
     "GLM_Tweedie_1.5": {
       "model": "GLMWrapper(alpha=0.0, family='tweedie_1.5')",
-      "cv_rmse_mean": 0.002604232778041956,
-      "cv_rmse_std": 0.0007230793529447454,
-      "cv_scores": "[-8.32475389e-06 -2.90470345e-06 -1.44683093e-05 -6.53770769e-06\n -4.28888628e-06]"
+      "cv_rmse_mean": 0.0029254580666132784,
+      "cv_rmse_std": 0.0008071586165809858,
+      "cv_scores": "[-1.29525492e-05 -2.40517057e-06 -1.38532971e-05 -1.05545936e-05\n -6.28343920e-06]"
     },
     "GLM_Tweedie_1.9": {
       "model": "GLMWrapper(alpha=0.0, family='tweedie_1.9')",
-      "cv_rmse_mean": 0.002604232778041956,
-      "cv_rmse_std": 0.0007230793529447454,
-      "cv_scores": "[-8.32475389e-06 -2.90470345e-06 -1.44683093e-05 -6.53770769e-06\n -4.28888628e-06]"
+      "cv_rmse_mean": 0.0029254580666132784,
+      "cv_rmse_std": 0.0008071586165809858,
+      "cv_scores": "[-1.29525492e-05 -2.40517057e-06 -1.38532971e-05 -1.05545936e-05\n -6.28343920e-06]"
     }
   },
   "max_lag": 0,
-  "created_at": "2025-07-06T16:54:57.824954",
+  "created_at": "2025-07-06T16:35:59.223083",
   "python_version": "2.3.0|2.2.6"
 }

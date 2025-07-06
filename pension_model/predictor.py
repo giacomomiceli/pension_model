@@ -101,8 +101,6 @@ class TimeSeriesPredictor:
             'shape': df_input.shape,
             'date_range': (df_input['Annee'].min(), df_input['Annee'].max()) if 'Annee' in df_input.columns else None
         }
-
-        logger.info(f" Data loaded: {df_input.shape[0]} rows, {df_input.shape[1]} columns")
         
         self.df = df_input.copy()
         
@@ -679,15 +677,15 @@ class TimeSeriesPredictor:
                 self.data_schema = metadata.get('data_schema', {})
                 self.max_lag = metadata.get('max_lag', 0)
                 
-                logger.info(f"Metadata loaded from {metadata_file}")
+                logger.info(f" Metadata loaded from {metadata_file}")
             else:
-                logger.warning("No metadata found")
+                logger.warning(" No metadata found")
             
-            logger.info("Model loading completed successfully")
+            logger.info(" Model loading completed successfully")
             return True
             
         except Exception as e:
-            logger.error(f"Error loading model: {str(e)}")
+            logger.error(f" Error loading model: {str(e)}")
             return False
 
     def predict_new_data(self, new_data: pd.DataFrame, return_confidence: bool = False) -> Union[np.ndarray, tuple]:
@@ -774,33 +772,117 @@ class TimeSeriesPredictor:
     
     def _apply_feature_engineering(self, new_data: pd.DataFrame) -> pd.DataFrame:
         """Apply the same feature engineering as during training"""
+
+        logger.info(" Applying feature engineering to new data...")
+        
         df = new_data.copy()
         
         # Get feature engineering parameters
         lag_periods = self.feature_engineering_params.get('lag_periods', [])
         rolling_windows = self.feature_engineering_params.get('rolling_windows', [])
-        
-        # Create lag features
-        feature_cols = [col for col in df.columns]
-        for col in feature_cols:
-            for lag in lag_periods:
-                lag_col = f"{col}_lag_{lag}"
-                df[lag_col] = df[col].shift(lag)
-        
-        # Create rolling window features
-        for col in feature_cols:
-            for window in rolling_windows:
-                roll_col = f"{col}_roll_mean_{window}"
-                df[roll_col] = df[col].rolling(window=window).mean()
-        
-        # Handle NaN values for predictions
-        # For lag features, we need historical data or imputation
-        if df.isnull().any().any():
-            logger.warning(" NaN values found after feature engineering. "
-                            "Consider providing more historical data or using imputation")
+
+        logger.info(f" Original new data shape: {df.shape}")
+
+        # Separate features (exclude target and year columns if present)
+        feature_cols = [col for col in df.columns if col not in [self.target_col, 'Annee']]
+        logger.info(f" Base feature columns: {feature_cols}")
             
-            # Simple forward fill for demonstration - customize as needed
-            df = df.fillna(method='ffill').fillna(method='bfill')
+        # Create lag features (only if lag_periods is not empty)
+        if lag_periods and len(lag_periods) > 0:
+            logger.info(f" Creating lag features with periods: {lag_periods}")
+
+            for col in feature_cols:
+                for lag in lag_periods:
+                    lag_col = f"{col}_lag_{lag}"
+                    df[lag_col] = df[col].shift(lag)
+
+            logger.info(f" Created {len(feature_cols) * len(lag_periods)} lag features")
+
+        else:
+            logger.info(" Skipping lag feature creation (lag_periods is empty)")
+        
+        # Create rolling window features (only if rolling_windows is not empty)
+        if rolling_windows and len(rolling_windows) > 0:
+            logger.info(f" Creating rolling window features with windows: {rolling_windows}")
+            
+            for col in feature_cols:
+                for window in rolling_windows:
+                    roll_col = f"{col}_roll_mean_{window}"
+                    df[roll_col] = df[col].rolling(window=window).mean()
+
+            logger.info(f" Created {len(feature_cols) * len(rolling_windows)} rolling window features")
+        
+        else:
+            logger.info(" Skipping rolling window feature creation (rolling_windows is empty)")
+
+        logger.info(f" Data shape after feature engineering: {df.shape}")
+
+        # Handle NaN values for predictions
+        nan_count_before = df.isnull().sum().sum()
+        if nan_count_before > 0:
+            logger.warning(f" Found {nan_count_before} NaN values after feature engineering")
+            
+            # Strategy 1: Forward fill then backward fill
+            df_filled = df.fillna(method='ffill').fillna(method='bfill')
+
+            # Strategy 2: If still NaN, use median of available data
+            remaining_nan = df_filled.isnull().sum().sum()
+            if remaining_nan > 0:
+                logger.warning(f" {remaining_nan} NaN values remain after forward/backward fill. Using median imputation.")
+                
+                # Use median from training data if available, otherwise current data
+                if hasattr(self, 'training_medians'):
+                    for col in df_filled.columns:
+                        if col in self.training_medians:
+                            df_filled[col] = df_filled[col].fillna(self.training_medians[col])
+                        else:
+                            df_filled[col] = df_filled[col].fillna(df_filled[col].median())
+                else:
+                    df_filled = df_filled.fillna(df_filled.median())
+
+            df = df_filled
+            final_nan_count = df.isnull().sum().sum()
+
+            if final_nan_count > 0:
+                logger.error(f" Warning: {final_nan_count} NaN values still remain after all imputation strategies")
+                logger.error(" Consider providing more historical data or reviewing the feature engineering pipeline")
+            else:
+                logger.info(" All NaN values successfully handled")
+
+        # Apply feature selection if it was used during training
+        if hasattr(self, 'feature_selector') and self.feature_selector is not None:
+            logger.info(" Applying feature selection from training...")
+            
+            # Get selected features from training
+            selected_features = self.feature_engineering_params.get('selected_features', [])
+            
+            # Check if all selected features are available
+            missing_features = [f for f in selected_features if f not in df.columns]
+            if missing_features:
+                raise ValueError(f"Missing features required for prediction: {missing_features}")
+            
+            # Select only the features that were selected during training
+            df = df[selected_features]
+            logger.info(f" Applied feature selection: {len(selected_features)} features selected")
+        
+        elif hasattr(self, 'feature_names') and self.feature_names is not None:
+            # Fallback: use feature names from training if available
+            logger.info(" Using feature names from training...")
+            
+            available_features = [f for f in self.feature_names if f in df.columns]
+            missing_features = [f for f in self.feature_names if f not in df.columns]
+            
+            if missing_features:
+                logger.warning(f" Missing features: {missing_features}")
+            
+            if available_features:
+                df = df[available_features]
+                logger.info(f" Selected {len(available_features)} features based on training")
+            else:
+                raise ValueError("No training features found in new data")
+        
+        logger.info(f" Final data shape for prediction: {df.shape}")
+        logger.info(f" Final features: {list(df.columns)}")
         
         return df
 
