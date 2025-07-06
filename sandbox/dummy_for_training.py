@@ -9,6 +9,9 @@ from sklearn.feature_selection import SelectKBest, f_regression
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Create the dummies
+# Modify the method `feature_engineering`
+# Modify the methof `_apply_feature_engineering` for the prediction phase
 
 def create_structural_break_dummies(self, df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -52,7 +55,8 @@ def create_structural_break_dummies(self, df: pd.DataFrame) -> pd.DataFrame:
     df_with_dummies['post_covid_regime'] = (df_with_dummies['year'] >= 2020).astype(int)
     
     # 7. Create trend break variables
-    df_with_dummies['trend'] = df_with_dummies['year'] - df_with_dummies['year'].min()
+    self.trend_base_year = df_with_dummies['year'].min()  # Store for prediction consistency
+    df_with_dummies['trend'] = df_with_dummies['year'] - self.trend_base_year
     df_with_dummies['trend_post_2008'] = (df_with_dummies['post_2008_regime'] * 
                                          df_with_dummies['trend'])
     df_with_dummies['trend_post_covid'] = (df_with_dummies['post_covid_regime'] * 
@@ -210,3 +214,129 @@ def feature_engineering(self):
     logger.info(f"  - Created features: {len(self.feature_engineering_params['created_features'])}")
     
     return self.X, self.y
+
+def _apply_feature_engineering(self, new_data: pd.DataFrame) -> pd.DataFrame:
+    """Apply the same feature engineering as during training, including structural break dummies"""
+    
+    logger.info(" Applying feature engineering to new data...")
+    
+    df = new_data.copy()
+    
+    # Get feature engineering parameters
+    lag_periods = self.feature_engineering_params.get('lag_periods', [])
+    rolling_windows = self.feature_engineering_params.get('rolling_windows', [])
+    
+    logger.info(f" Original new data shape: {df.shape}")
+    
+    # Step 1: Create structural break dummies (same as training)
+    df = self._create_structural_break_dummies_for_prediction(df)
+    
+    # Step 2: Separate base features (exclude target, year, and dummy variables)
+    dummy_cols = getattr(self, 'dummy_variables', [])
+    base_feature_cols = [col for col in df.columns 
+                        if col not in [self.target_col, 'Annee'] + dummy_cols]
+    
+    logger.info(f" Base feature columns: {base_feature_cols}")
+    logger.info(f" Dummy variables: {dummy_cols}")
+    
+    # Step 3: Create lag features (only for base features, not dummies)
+    if lag_periods and len(lag_periods) > 0:
+        logger.info(f" Creating lag features with periods: {lag_periods}")
+        
+        for col in base_feature_cols:
+            for lag in lag_periods:
+                lag_col = f"{col}_lag_{lag}"
+                df[lag_col] = df[col].shift(lag)
+        
+        logger.info(f" Created {len(base_feature_cols) * len(lag_periods)} lag features")
+    else:
+        logger.info(" Skipping lag feature creation (lag_periods is empty)")
+    
+    # Step 4: Create rolling window features (only for base features, not dummies)
+    if rolling_windows and len(rolling_windows) > 0:
+        logger.info(f" Creating rolling window features with windows: {rolling_windows}")
+        
+        for col in base_feature_cols:
+            for window in rolling_windows:
+                roll_col = f"{col}_roll_mean_{window}"
+                df[roll_col] = df[col].rolling(window=window).mean()
+        
+        logger.info(f" Created {len(base_feature_cols) * len(rolling_windows)} rolling window features")
+    else:
+        logger.info(" Skipping rolling window feature creation (rolling_windows is empty)")
+    
+    logger.info(f" Data shape after feature engineering: {df.shape}")
+    
+    # Step 5: Handle NaN values for predictions
+    nan_count_before = df.isnull().sum().sum()
+    if nan_count_before > 0:
+        logger.warning(f" Found {nan_count_before} NaN values after feature engineering")
+        
+        # Strategy 1: Forward fill then backward fill
+        df_filled = df.fillna(method='ffill').fillna(method='bfill')
+        
+        # Strategy 2: If still NaN, use median of available data
+        remaining_nan = df_filled.isnull().sum().sum()
+        if remaining_nan > 0:
+            logger.warning(f" {remaining_nan} NaN values remain after forward/backward fill. Using median imputation.")
+            
+            # Use median from training data if available, otherwise current data
+            if hasattr(self, 'training_medians'):
+                for col in df_filled.columns:
+                    if col in self.training_medians:
+                        df_filled[col] = df_filled[col].fillna(self.training_medians[col])
+                    else:
+                        df_filled[col] = df_filled[col].fillna(df_filled[col].median())
+            else:
+                # Don't impute dummy variables with median - they should be 0 or 1
+                non_dummy_cols = [col for col in df_filled.columns if col not in dummy_cols]
+                df_filled[non_dummy_cols] = df_filled[non_dummy_cols].fillna(df_filled[non_dummy_cols].median())
+                
+                # Set dummy variables to 0 if they're NaN (shouldn't happen, but safety check)
+                df_filled[dummy_cols] = df_filled[dummy_cols].fillna(0)
+        
+        df = df_filled
+        final_nan_count = df.isnull().sum().sum()
+        
+        if final_nan_count > 0:
+            logger.error(f" Warning: {final_nan_count} NaN values still remain after all imputation strategies")
+            logger.error(" Consider providing more historical data or reviewing the feature engineering pipeline")
+        else:
+            logger.info(" All NaN values successfully handled")
+    
+    # Step 6: Apply feature selection if it was used during training
+    if hasattr(self, 'feature_selector') and self.feature_selector is not None:
+        logger.info(" Applying feature selection from training...")
+        
+        # Get selected features from training
+        selected_features = self.feature_engineering_params.get('selected_features', [])
+        
+        # Check if all selected features are available
+        missing_features = [f for f in selected_features if f not in df.columns]
+        if missing_features:
+            raise ValueError(f"Missing features required for prediction: {missing_features}")
+        
+        # Select only the features that were selected during training
+        df = df[selected_features]
+        logger.info(f" Applied feature selection: {len(selected_features)} features selected")
+    
+    elif hasattr(self, 'feature_names') and self.feature_names is not None:
+        # Fallback: use feature names from training if available
+        logger.info(" Using feature names from training...")
+        
+        available_features = [f for f in self.feature_names if f in df.columns]
+        missing_features = [f for f in self.feature_names if f not in df.columns]
+        
+        if missing_features:
+            logger.warning(f" Missing features: {missing_features}")
+        
+        if available_features:
+            df = df[available_features]
+            logger.info(f" Selected {len(available_features)} features based on training")
+        else:
+            raise ValueError("No training features found in new data")
+    
+    logger.info(f" Final data shape for prediction: {df.shape}")
+    logger.info(f" Final features: {list(df.columns)}")
+    
+    return df
