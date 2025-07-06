@@ -49,8 +49,8 @@ raw_df = pd.concat([df_historical_data, df_scenarios], ignore_index=True)
 ## Step 0: Instantiate predictor object
 predictor = TimeSeriesPredictor(
     target_col='D_PIB', 
-    lag_periods=[1, 9],
-    rollign_windows=[3, 6],
+    lag_periods=[],
+    rollign_windows=[],
     model_dir='models')
 
 ## Step 1: Load and explore data
