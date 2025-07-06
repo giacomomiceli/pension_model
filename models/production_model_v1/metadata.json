@@ -2,7 +2,7 @@
   "model_name": "production_model_v1",
   "best_model_name": "GLM_Gamma_Log",
   "target_column": "D_PIB",
-  "feature_names": "Index(['PROD', 'PIB_VAL', 'PRELEV_REF', 'CONTRIB_REF', 'PIB_VOL', 'PROD_lag_1',\n       'PROD_lag_9', 'PIB_VAL_lag_1', 'PRELEV_REF_lag_1', 'CONTRIB_REF_lag_1',\n       'PIB_VOL_lag_1', 'PROD_roll_mean_3', 'PROD_roll_mean_6',\n       'MI_roll_mean_6', 'PIB_VAL_roll_mean_3', 'PIB_VAL_roll_mean_6',\n       'PRELEV_REF_roll_mean_3', 'CONTRIB_REF_roll_mean_3',\n       'PIB_VOL_roll_mean_3', 'PIB_VOL_roll_mean_6'],\n      dtype='object')",
+  "feature_names": "Index(['PROD', 'CHO', 'MI', 'FEC', 'ESP_F', 'ESP_H', 'PIB_VAL', 'PRELEV_REF',\n       'CONTRIB_REF', 'PIB_VOL'],\n      dtype='object')",
   "data_schema": {
     "columns": [
       "Annee",
@@ -42,91 +42,44 @@
     ]
   },
   "feature_engineering_params": {
-    "lag_periods": [
-      1,
-      9
-    ],
-    "rolling_windows": [
-      3,
-      6
-    ],
-    "created_features": [
-      "PROD_lag_1",
-      "PROD_lag_9",
-      "CHO_lag_1",
-      "CHO_lag_9",
-      "MI_lag_1",
-      "MI_lag_9",
-      "FEC_lag_1",
-      "FEC_lag_9",
-      "ESP_F_lag_1",
-      "ESP_F_lag_9",
-      "ESP_H_lag_1",
-      "ESP_H_lag_9",
-      "PIB_VAL_lag_1",
-      "PIB_VAL_lag_9",
-      "PRELEV_REF_lag_1",
-      "PRELEV_REF_lag_9",
-      "CONTRIB_REF_lag_1",
-      "CONTRIB_REF_lag_9",
-      "PIB_VOL_lag_1",
-      "PIB_VOL_lag_9",
-      "PROD_roll_mean_3",
-      "PROD_roll_mean_6",
-      "CHO_roll_mean_3",
-      "CHO_roll_mean_6",
-      "MI_roll_mean_3",
-      "MI_roll_mean_6",
-      "FEC_roll_mean_3",
-      "FEC_roll_mean_6",
-      "ESP_F_roll_mean_3",
-      "ESP_F_roll_mean_6",
-      "ESP_H_roll_mean_3",
-      "ESP_H_roll_mean_6",
-      "PIB_VAL_roll_mean_3",
-      "PIB_VAL_roll_mean_6",
-      "PRELEV_REF_roll_mean_3",
-      "PRELEV_REF_roll_mean_6",
-      "CONTRIB_REF_roll_mean_3",
-      "CONTRIB_REF_roll_mean_6",
-      "PIB_VOL_roll_mean_3",
-      "PIB_VOL_roll_mean_6"
-    ],
-    "selected_features": "Index(['PROD', 'PIB_VAL', 'PRELEV_REF', 'CONTRIB_REF', 'PIB_VOL', 'PROD_lag_1',\n       'PROD_lag_9', 'PIB_VAL_lag_1', 'PRELEV_REF_lag_1', 'CONTRIB_REF_lag_1',\n       'PIB_VOL_lag_1', 'PROD_roll_mean_3', 'PROD_roll_mean_6',\n       'MI_roll_mean_6', 'PIB_VAL_roll_mean_3', 'PIB_VAL_roll_mean_6',\n       'PRELEV_REF_roll_mean_3', 'CONTRIB_REF_roll_mean_3',\n       'PIB_VOL_roll_mean_3', 'PIB_VOL_roll_mean_6'],\n      dtype='object')"
+    "lag_periods": [],
+    "rolling_windows": [],
+    "created_features": [],
+    "selected_features": "Index(['PROD', 'CHO', 'MI', 'FEC', 'ESP_F', 'ESP_H', 'PIB_VAL', 'PRELEV_REF',\n       'CONTRIB_REF', 'PIB_VOL'],\n      dtype='object')"
   },
   "model_results": {
     "Random Forest": {
-      "model": "RandomForestRegressor(n_estimators=50, random_state=42)",
-      "cv_rmse_mean": 0.003252757152687198,
-      "cv_rmse_std": 0.0015133787536760937,
-      "cv_scores": "[-1.38134848e-05 -2.46088551e-05 -1.22792969e-05 -1.34838303e-05\n -1.68254578e-07]"
+      "model": "RandomForestRegressor(max_depth=10, n_estimators=200, random_state=42)",
+      "cv_rmse_mean": 0.003367864425846251,
+      "cv_rmse_std": 0.001808363975195301,
+      "cv_scores": "[-1.21664221e-05 -3.65454261e-05 -1.12065343e-05 -1.30228017e-05\n -1.22271087e-07]"
     },
     "GLM_Gamma_Log": {
       "model": "GLMWrapper(alpha=0.0)",
-      "cv_rmse_mean": 0.002340252452965502,
-      "cv_rmse_std": 0.0010523639077465899,
-      "cv_scores": "[-1.48625591e-05 -6.56723204e-06 -8.08447601e-06 -2.83490341e-06\n -5.72086084e-07]"
+      "cv_rmse_mean": 0.002507219022564397,
+      "cv_rmse_std": 0.0007357933003332379,
+      "cv_scores": "[-6.65342682e-06 -2.23964396e-06 -1.40307309e-05 -6.66779239e-06\n -4.54610099e-06]"
     },
     "GLM_Gaussian_Log": {
       "model": "GLMWrapper(alpha=0.0, family='gaussian')",
-      "cv_rmse_mean": 0.0023712020147295906,
-      "cv_rmse_std": 0.0010420101029935038,
-      "cv_scores": "[-1.48559282e-05 -6.97469830e-06 -8.16843593e-06 -2.90622468e-06\n -6.36633113e-07]"
+      "cv_rmse_mean": 0.0025222594213301142,
+      "cv_rmse_std": 0.0007527828566262095,
+      "cv_scores": "[-6.57672274e-06 -2.12174713e-06 -1.40369413e-05 -7.39384221e-06\n -4.51311970e-06]"
     },
     "GLM_Tweedie_1.5": {
       "model": "GLMWrapper(alpha=0.0, family='tweedie_1.5')",
-      "cv_rmse_mean": 0.0023541736753068324,
-      "cv_rmse_std": 0.00103741349614189,
-      "cv_scores": "[-1.41572999e-05 -7.52102053e-06 -8.25396965e-06 -2.50137733e-06\n -6.58134882e-07]"
+      "cv_rmse_mean": 0.002604232778041956,
+      "cv_rmse_std": 0.0007230793529447454,
+      "cv_scores": "[-8.32475389e-06 -2.90470345e-06 -1.44683093e-05 -6.53770769e-06\n -4.28888628e-06]"
     },
     "GLM_Tweedie_1.9": {
       "model": "GLMWrapper(alpha=0.0, family='tweedie_1.9')",
-      "cv_rmse_mean": 0.0023541736753068324,
-      "cv_rmse_std": 0.00103741349614189,
-      "cv_scores": "[-1.41572999e-05 -7.52102053e-06 -8.25396965e-06 -2.50137733e-06\n -6.58134882e-07]"
+      "cv_rmse_mean": 0.002604232778041956,
+      "cv_rmse_std": 0.0007230793529447454,
+      "cv_scores": "[-8.32475389e-06 -2.90470345e-06 -1.44683093e-05 -6.53770769e-06\n -4.28888628e-06]"
     }
   },
-  "max_lag": 9,
-  "created_at": "2025-07-06T15:35:44.501977",
+  "max_lag": 0,
+  "created_at": "2025-07-06T15:42:07.417506",
   "python_version": "2.3.0|2.2.6"
 }
