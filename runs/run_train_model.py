@@ -10,9 +10,6 @@ from pension_model.predictor import TimeSeriesPredictor
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Instantiate the predictor object
-predictor = TimeSeriesPredictor(target_col='D_PIB', model_dir='models')
-
 # Load your data
 dtypes = {
     "Annee": "int64",
@@ -48,6 +45,13 @@ raw_df = pd.concat([df_historical_data, df_scenarios], ignore_index=True)
 #############################################################################
 
 # Complete training pipeline
+
+## Step 0: Instantiate predictor object
+predictor = TimeSeriesPredictor(
+    target_col='D_PIB', 
+    lag_periods=[1, 9],
+    rollign_windows=[3, 6],
+    model_dir='models')
 
 ## Step 1: Load and explore data
 df_clean = predictor.load_and_explore_data(raw_df)

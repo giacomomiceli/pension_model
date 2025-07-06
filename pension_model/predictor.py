@@ -42,7 +42,7 @@ class TimeSeriesPredictor:
     Advanced Time Series Predictor with production-ready features
     """
     
-    def __init__(self, target_col='T', model_dir='models'):
+    def __init__(self, target_col='T', lag_periods = [], rollign_windows = [], model_dir='models'):
         self.target_col = target_col
         self.models = {}
         self.results = {}
@@ -57,9 +57,16 @@ class TimeSeriesPredictor:
         
         # Store preprocessing pipeline components
         self.preprocessing_pipeline = {}
-        self.feature_engineering_params = {}
         self.data_schema = {}
         self.model_metadata = {}
+
+        # Store feature engineering parameters
+        self.feature_engineering_params = {
+            'lag_periods': lag_periods, #[1, 2],     # Example lag periods
+            'rolling_windows': rollign_windows, #[3, 6], # Example rolling windows
+            'created_features': [],
+            'selected_features': [],
+        }
         
         # For lag features and windowing
         self.lag_features = []
@@ -223,19 +230,11 @@ class TimeSeriesPredictor:
 
     def feature_engineering(self):
         """
-        Feature engineering and selection
+        Feature engineering and selection with conditional feature creation
         """
         logger.info("="*60)
         logger.info(" Feature engineering and selection")
-        logger.info("="*60)
-
-        # Store feature engineering parameters
-        self.feature_engineering_params = {
-            'lag_periods': [1, 2],     # Example lag periods
-            'rolling_windows': [3, 6], # Example rolling windows
-            'created_features': [],
-            'selected_features': [],
-        }
+        logger.info("="*60)       
         
         # Separate features and target
         feature_cols = [col for col in self.df.columns if col not in [self.target_col, 'Annee']]
@@ -249,17 +248,31 @@ class TimeSeriesPredictor:
         logger.info(f" Original features: {len(feature_cols)}")
         logger.info(f" Feature names: {feature_cols}")
         
-        # Create lag features for time series
-        if 'Annee' in self.df.columns:
+        # Create lag features for time series (only if lag_periods is not empty)
+        if ('Annee' in self.df.columns and self.feature_engineering_params.get('lag_periods') and len(self.feature_engineering_params['lag_periods']) > 0):
+
             logger.info(" Creating lag features...")
+            logger.info(f" Lag periods: {self.feature_engineering_params['lag_periods']}")
+
             for col in feature_cols:  # Create lags for all features to avoid overfitting
                 for lag in self.feature_engineering_params['lag_periods']:
                     lag_col = f"{col}_lag_{lag}"
                     X[lag_col] = X[col].shift(lag)
                     self.lag_features.append(lag_col)
                     self.feature_engineering_params['created_features'].append(lag_col)
+
+            logger.info(f" Created {len(self.lag_features)} lag features")
+        
+        else:
+
+            logger.info(" Skipping lag feature creation (lag_periods is empty or Annee column not found)")
+
+        # Create rolling windows features
+        if ('Annee' in self.df.columns and self.feature_engineering_params.get('rolling_windows') and len(self.feature_engineering_params['rolling_windows']) > 0):
             
-            # Create rolling windows features
+            logger.info(" Creating rolling window features...")
+            logger.info(f" Rolling windows: {self.feature_engineering_params['rolling_windows']}")
+                    
             for col in feature_cols:  # Rolling stats for all features
                 for window in self.feature_engineering_params['rolling_windows']:
                     roll_col = f"{col}_roll_mean_{window}"
@@ -267,35 +280,73 @@ class TimeSeriesPredictor:
                     self.window_features.append(roll_col)
                     self.feature_engineering_params['created_features'].append(roll_col)
 
+            logger.info(f" Created {len(self.window_features)} rolling window features")
+
+        else:
+
+            logger.info(" Skipping rolling window feature creation (rolling_windows is empty or Annee column not found)")
+
         # Update max lag for prediction purposes
-        self.max_lag = max(self.feature_engineering_params['lag_periods'])
+        if self.feature_engineering_params.get('lag_periods'):
+            self.max_lag = max(self.feature_engineering_params['lag_periods'])
+        else:
+            self.max_lag = 0
         
         # Remove rows with NaN values created by lag/rolling features
+        initial_rows = len(X)
         mask = ~(X.isnull().any(axis=1) | y.isnull())
         X = X[mask]
         y = y[mask]
+
+        removed_rows = initial_rows - len(X)
+        if removed_rows > 0:
+            logger.info(f" Removed {removed_rows} rows due to NaN values from feature engineering")
         
         logger.info(f" Features after engineering: {X.shape[1]}")
         logger.info(f" Samples after cleaning: {len(X)}")
         
         # Feature selection using statistical tests
-        # Rule: Select features based on sample size ratio (Harrell's rule of thumb)
-        # For regression: max features ~ n_samples / 15, but ensure at least 5 and max 20
-        max_features = max(5, min(20, len(X) // 15))
-        k_features = min(max_features, X.shape[1])
-        selector = SelectKBest(score_func=f_regression, k=k_features) # Harrell's rule of thumb
-        X_selected = selector.fit_transform(X, y)
-        selected_features = X.columns[selector.get_support()]
-        self.feature_engineering_params['selected_features'] = selected_features
-        
-        logger.info(f" Selected features ({len(selected_features)}): {list(selected_features)}")
-        
-        self.X = pd.DataFrame(X_selected, columns=selected_features, index=X.index)
-        self.y = y
-        self.feature_names = selected_features
+        if X.shape[1] > 0:  # Only proceed if we have features
+            # Rule: Select features based on sample size ratio (Harrell's rule of thumb)
+            # For regression: max features ~ n_samples / 15, but ensure at least 5 and max 20
+            max_features = max(5, min(20, len(X) // 15))
+            k_features = min(max_features, X.shape[1])
+            
+            if k_features < X.shape[1]:
+                logger.info(f" Applying feature selection: selecting {k_features} out of {X.shape[1]} features")
+                selector = SelectKBest(score_func=f_regression, k=k_features) # Harrell's rule of thumb
+                X_selected = selector.fit_transform(X, y)
+                selected_features = X.columns[selector.get_support()]
+                
+                # Store feature selection information
+                self.feature_selector = selector
+                self.feature_engineering_params['selected_features'] = selected_features
+            
+                logger.info(f" Selected features ({len(selected_features)}): {list(selected_features)}")
+            
+                self.X = pd.DataFrame(X_selected, columns=selected_features, index=X.index)
 
-        logger.info(f" Feature engineering completed.\nCreated {len(self.feature_engineering_params['created_features'])} new features\nSelected {len(self.feature_engineering_params['selected_features'])} features")
+            else:
+                logger.info(" No feature selection applied (number of features <= maximum allowed)")
+                self.X = X
+                self.feature_engineering_params['selected_features'] = X.columns
+                self.feature_selector = None
+
+        else:
+            raise ValueError("No features available after feature engineering")
+            
+        self.y = y
+        self.feature_names = self.X.columns
+
+        # Summary logging
+        total_created = len(self.feature_engineering_params['created_features'])
+        total_selected = len(self.feature_engineering_params['selected_features'])
         
+        logger.info(f" Feature engineering completed:")
+        logger.info(f"   - Created {total_created} new features")
+        logger.info(f"   - Selected {total_selected} final features")
+        logger.info(f"   - Max lag period: {self.max_lag}")
+
         return self.X, self.y
     
     def prepare_data_for_modeling(self):
@@ -763,16 +814,27 @@ class TimeSeriesPredictor:
         if not self.feature_engineering_params:
             return {"error": "No model trained yet"}
         
+        else:
+            required_base_columns = [col for col in self.data_schema.get('columns', [])]
+            max_lag_required = self.max_lag
+            minimum_rows_needed = self.feature_engineering_params.get('rolling_windows', [1]).copy()
+            if not minimum_rows_needed:
+                minimum_rows_needed = [1]
+            minimum_rows_needed.append(self.max_lag)
+            minimum_rows_needed = max(minimum_rows_needed)
+            lag_periods = self.feature_engineering_params.get('lag_periods')
+            rolling_windows = self.feature_engineering_params.get('rolling_windows')
+            total_features_created_and_selected = len(self.feature_names)
+        
         return {
-            "required_base_columns": [col for col in self.data_schema.get('columns', [])],
-            "max_lag_required": self.max_lag,
-            "minimum_rows_needed": max(self.max_lag, 
-                                        max(self.feature_engineering_params.get('rolling_windows', [1]))),
+            "required_base_columns": required_base_columns,
+            "max_lag_required": max_lag_required,
+            "minimum_rows_needed":minimum_rows_needed,
             "feature_engineering_applied": {
-                "lag_periods": self.feature_engineering_params.get('lag_periods'),
-                "rolling_windows": self.feature_engineering_params.get('rolling_windows')
+                "lag_periods": lag_periods,
+                "rolling_windows": rolling_windows
             },
-            "total_features_created_and_selected": len(self.feature_names)
+            "total_features_created_and_selected": total_features_created_and_selected
         }
 
 if __name__ == "__main__":
